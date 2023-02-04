@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class Main {
@@ -16,6 +17,11 @@ public class Main {
             linkProgress.add(link);
         }
         zipFiles(linkProgress, "D:/Games/savegames/zip.zip");
+        openZip("D:/Games/savegames/zip.zip",linkProgress);
+        for (int i = 0; i< progresses.size(); i++) {
+            System.out.println("player" + (i+1) + " " +progresses.get(i));
+        }
+
     }
 
     public static void saveGame(GameProgress progress, String path) {
@@ -51,6 +57,25 @@ public class Main {
             if (file.delete()) {
                 System.out.println("Файл " + file.getName() + " удален");
             }
+        }
+    }
+
+    public static void openZip(String zipPath, ArrayList<String> path) {
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream("/D:/Games/savegames"))) {
+            ZipEntry entry;
+            String name;
+            while ((entry = zin.getNextEntry()) != null) {
+                name = entry.getName();
+                FileOutputStream fout = new FileOutputStream(name);
+                for (int c = zin.read(); c != -1; c = zin.read()) {
+                    fout.write(c);
+                }
+                fout.flush();
+                zin.closeEntry();
+                fout.close();
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }
